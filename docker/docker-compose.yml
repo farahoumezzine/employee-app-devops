@@ -4,7 +4,7 @@ services:
     build:
       context: ../backend
       dockerfile: ../docker/Dockerfile.backend
-    image: farahoumezzine/employee-overtime-backend
+    image: farahoum123/employee-overtime-backend
     ports:
       - "5000:5000"
     environment:
@@ -18,7 +18,7 @@ services:
     build:
       context: ../frontend
       dockerfile: ../docker/Dockerfile.frontend
-    image: farahoumezzine/employee-overtime-frontend
+    image: farahoum123/employee-overtime-frontend
     ports:
       - "3000:3000"
     depends_on:
