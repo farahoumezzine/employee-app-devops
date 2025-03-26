@@ -4,29 +4,29 @@ services:
     build:
       context: ../backend
       dockerfile: ../docker/Dockerfile.backend
+    image: farahoumezzine/employee-overtime-backend
     ports:
       - "5000:5000"
     environment:
       - DB_HOST=db
       - DB_USER=root
-      - DB_PASSWORD=your_password
+      - DB_PASSWORD=
       - DB_NAME=employee_db
     depends_on:
       - db
-
   frontend:
     build:
       context: ../frontend
       dockerfile: ../docker/Dockerfile.frontend
+    image: farahoumezzine/employee-overtime-frontend
     ports:
       - "3000:3000"
     depends_on:
       - backend
-
   db:
     image: mysql:8.0
     environment:
-      - MYSQL_ROOT_PASSWORD=your_password
+      - MYSQL_ROOT_PASSWORD=
       - MYSQL_DATABASE=employee_db
     volumes:
       - ../database/init.sql:/docker-entrypoint-initdb.d/init.sql
