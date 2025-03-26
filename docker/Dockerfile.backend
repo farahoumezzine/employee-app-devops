@@ -1,7 +1,6 @@
 FROM node:16
 WORKDIR /app
-COPY backend/package*.json ./
+COPY package*.json ./
 RUN npm install
-COPY backend/ ./
-EXPOSE 5000
-CMD ["node", "index.js"]
+COPY . ./
+CMD ["node", "server.js"]
