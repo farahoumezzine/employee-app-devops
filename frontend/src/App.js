@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './App.css'; // Assuming you’re using the separate CSS file from the previous step
+import './App.css';
 
 function App() {
   const [employees, setEmployees] = useState([]);
@@ -18,14 +18,12 @@ function App() {
     fetchEmployees();
   }, []);
 
-  // Fetch employees
   const fetchEmployees = () => {
     axios.get('http://localhost:5000/employees')
       .then(res => setEmployees(res.data))
       .catch(err => console.error(err));
   };
 
-  // Add a new employee
   const handleAddEmployee = (e) => {
     e.preventDefault();
     axios.post('http://localhost:5000/employees', { nom, prenom, poste })
@@ -38,7 +36,6 @@ function App() {
       .catch(err => console.error(err));
   };
 
-  // Fetch overtime hours when date changes
   useEffect(() => {
     if (selectedEmployee && overtimeDate) {
       axios.get(`http://localhost:5000/overtime/${selectedEmployee.id}/${overtimeDate}`)
@@ -49,7 +46,6 @@ function App() {
     }
   }, [selectedEmployee, overtimeDate]);
 
-  // Add or update overtime hours
   const handleAddOvertime = (e) => {
     e.preventDefault();
     if (!selectedEmployee) {
@@ -72,13 +68,26 @@ function App() {
       .catch(err => console.error(err));
   };
 
-  // Calculate overtime
   const calculateOvertime = (employeeId) => {
     axios.get(`http://localhost:5000/overtime/${employeeId}`, {
       params: { startDate, endDate }
     })
       .then(res => setOvertime(res.data))
       .catch(err => console.error(err));
+  };
+
+  // Nouvelle fonction pour supprimer un employé
+  const handleDeleteEmployee = (employeeId) => {
+    if (window.confirm('Are you sure you want to delete this employee?')) {
+      axios.delete(`http://localhost:5000/employees/${employeeId}`)
+        .then(() => {
+          fetchEmployees(); // Rafraîchir la liste
+          if (selectedEmployee && selectedEmployee.id === employeeId) {
+            setSelectedEmployee(null); // Désélectionner si supprimé
+          }
+        })
+        .catch(err => console.error(err));
+    }
   };
 
   return (
@@ -105,6 +114,23 @@ function App() {
               className={selectedEmployee?.id === emp.id ? 'selected' : ''}
             >
               {emp.prenom} {emp.nom} - {emp.poste}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation(); // Empêche le clic sur la ligne
+                  handleDeleteEmployee(emp.id);
+                }}
+                style={{
+                  marginLeft: '10px',
+                  padding: '5px 10px',
+                  backgroundColor: '#e74c3c',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                }}
+              >
+                Delete
+              </button>
             </li>
           ))}
         </ul>

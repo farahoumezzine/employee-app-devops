@@ -103,9 +103,28 @@ const startServer = async () => {
     }
   });
 
+
+  // Delete an employee
+  app.delete('/employees/:employeeId', async (req, res) => {
+    const { employeeId } = req.params;
+    try {
+      // Delete associated overtime records first (due to foreign key constraint)
+      await pool.query('DELETE FROM HeuresSup WHERE employe_id = ?', [employeeId]);
+      // Then delete the employee
+      const [result] = await pool.query('DELETE FROM Employe WHERE id = ?', [employeeId]);
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'Employee not found' });
+      }
+      res.status(204).send(); // No content on successful deletion
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
   const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 };
+
 
 // Start the server
 startServer();
