@@ -1,32 +1,26 @@
-version: '3'
 services:
-  backend:
-    build:
-      context: ../backend
-      dockerfile: ../docker/Dockerfile.backend
-    image: farahoumezzine/employee-overtime-backend
-    ports:
-      - "5000:5000"
-    environment:
-      - DB_HOST=db
-      - DB_USER=root
-      - DB_PASSWORD=
-      - DB_NAME=employee_db
-    depends_on:
-      - db
-  frontend:
-    build:
-      context: ../frontend
-      dockerfile: ../docker/Dockerfile.frontend
-    image: farahoumezzine/employee-overtime-frontend
-    ports:
-      - "3000:3000"
-    depends_on:
-      - backend
   db:
     image: mysql:8.0
     environment:
-      - MYSQL_ROOT_PASSWORD=
-      - MYSQL_DATABASE=employee_db
-    volumes:
-      - ../database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+      MYSQL_DATABASE: employee_db
+    ports:
+      - "3306:3306"
+    command: mysqld --port=3306 --bind-address=0.0.0.0 --skip-grant-tables
+  backend:
+    image: farahoum123/employee-overtime-backend
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=employee_db
+      - DB_USER=root
+      - DB_PASSWORD=
+    ports:
+      - "5000:5000"
+    command: node server.js
+  frontend:
+    image: farahoum123/employee-overtime-frontend
+    ports:
+      - "3000:3000"
